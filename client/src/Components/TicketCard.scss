@@ -74,14 +74,14 @@ h1 {
 		.to {
 			position: absolute;
 			left: 32px;
-			font-size: 35px;
+			font-size: 45px;
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			i {
 				margin-top: 5px;
 				margin-right: 10px;
-				font-size: 15px;
+				font-size: 35px;
 			}
 		}
 	}
@@ -95,7 +95,7 @@ h1 {
 			margin-bottom: 18px;
 		}
 		p {
-			font-size: 10px;
+			font-size: 15px;
 			font-weight: 700;
 		}
 		p + p {

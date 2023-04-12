@@ -3,7 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 
 const FlightCard = (props) => {
-  console.log(props);
+ // console.log(props);
   const arr = props;
   return (
     <div>
@@ -30,12 +30,12 @@ const FlightCard = (props) => {
       </div>
 
       <div className="flex flex-col p-2">
-        <p className="font-bold text-4xl">{props.dep_hour}:{props.dep_min}</p>
+        <p className="font-bold text-4xl">{props.dep_time}</p>
         <p className="text-gray-500 text-1xl"><span class="font-bold">{props.dep_code}</span> {props.dep_city}</p>
         <p className="text-gray-500">{props.dep_country}</p>
       </div>
       <div className="flex flex-col flex-wrap p-2">
-        <p className="font-bold text-4xl">{props.arr_hour}:{props.arr_min}</p>
+        <p className="font-bold text-4xl">{props.arr_time}</p>
         <p className="text-gray-500 text-1xl"><span className="font-bold">{props.arr_code}</span> {props.arr_city}</p>
         <p className="text-gray-500">{props.arr_country}</p>
       </div>

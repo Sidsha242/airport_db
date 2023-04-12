@@ -216,8 +216,8 @@ app.get('/api/exploreinfo',(req,res)=>{
             
             });
             
-            const result = await db.execute("select flight.flight_id,to_char(cast(flight.arrival_datetime as date),'DD-MM-YYYY') as arrival_date,to_char(cast(flight.departure_datetime as date),'DD-MM-YYYY') as departure_date,extract (hour from flight.arrival_datetime) as arrival_hour,extract (minute from flight.arrival_datetime) as arrival_minute,extract (hour from flight.departure_datetime) as departure_hour,extract (minute from flight.departure_datetime) as departure_minute,flight.seat_available,airlines.airlines_name,route.departure_airport_cd,route.destination_airport_cd,a.airport_city departure_city,b.airport_city destination_city,a.airport_country_cd departure_airport_country,b.airport_country_cd destination_airport_country,flight.base_price from flight, route, airlines, airport a, airport b where flight.route_id = route.route_id and flight.airlines_cd = airlines.airlines_cd and route.departure_airport_cd = a.airport_cd and route.destination_airport_cd = b.airport_cd",{});
-            console.log(result.rows);
+            const result = await db.execute("select flight.flight_id,to_char(cast(flight.arrival_datetime as date),'DD-MM-YYYY') as arrival_date,to_char(cast(flight.departure_datetime as date),'DD-MM-YYYY') as departure_date,to_char(departure_datetime, 'hh24:mi') as dep_time,to_char(arrival_datetime, 'hh24:mi') as arr_time,flight.seat_available,airlines.airlines_name,route.departure_airport_cd,route.destination_airport_cd,a.airport_city departure_city,b.airport_city destination_city,a.airport_country_cd departure_airport_country,b.airport_country_cd destination_airport_country,flight.base_price from flight,route,airlines,airport a,airport b where flight.route_id=route.route_id and flight.airlines_cd=airlines.airlines_cd and route.departure_airport_cd = a.airport_cd and route.destination_airport_cd = b.airport_cd",{});
+            //console.log(result.rows);
             return result;
         }
         catch(error)
@@ -237,6 +237,99 @@ app.get('/api/exploreinfo',(req,res)=>{
 
 }
 )
+
+app.post("/api/bookticket", (req,res) => {
+
+   const user_id = req.body.user_id;
+   const flight_id = req.body.flight_id;
+   const ticket_fare_amount = req.body.ticket_fare_amount;
+   const iscancel= "N";
+
+   oracledb.getConnection(connectionProperties, function (err, connection) {
+    if (err) 
+    {
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
+    }
+connection.execute(
+    "INSERT INTO airportdb.ticket (flight_id,user_id,ticket_fare_amount,iscancel) VALUES (:flight_id,:user_id,:ticket_fare_amount,:iscancel)",
+    [flight_id,user_id,ticket_fare_amount,iscancel],{autoCommit: true},
+    (err, result) => {
+        if (!err) {
+            res.send("Booking successful!");
+        }
+        else if (err) {
+            res.send("Error!");
+            console.log(err);
+            
+        }
+    }
+);
+});
+
+
+});
+
+app.get("/api/dashinfo/:id", async (req, res) => {
+
+    const id = req.params.id;
+
+    //console.log(id);
+
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) 
+        {
+                console.error(err.message);
+                response.status(500).send("Error connecting to DB");
+                return;
+        }
+    connection.execute(
+         "select ticket.ticket_id,flight.flight_id,to_char(cast(flight.arrival_datetime as date),'DD-MM-YYYY') as arrival_date,to_char(cast(flight.departure_datetime as date),'DD-MM-YYYY') as departure_date,to_char(departure_datetime, 'hh24:mi') as dep_time,to_char(arrival_datetime, 'hh24:mi') as arr_time,airlines.airlines_name,route.departure_airport_cd,route.destination_airport_cd,a.airport_city departure_city,b.airport_city destination_city,a.airport_country_cd departure_airport_country,b.airport_country_cd destination_airport_country from ticket,flight,route,airlines,airport a,airport b where user_id= :id and ticket.flight_id=flight.flight_id and flight.route_id=route.route_id and flight.airlines_cd=airlines.airlines_cd and route.departure_airport_cd = a.airport_cd and route.destination_airport_cd = b.airport_cd",[id], 
+        (err, result) => {
+            if (!err) {
+                res.send(result);
+            }
+            else if (err) {
+                res.send("Error!");
+                console.log(err);
+                
+            }
+        }
+    );
+    });
+    
+});
+
+app.delete("/api/cancelticket/:id", async (req, res) => {
+
+    const id = req.params.id;
+
+    //console.log(id);
+
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) 
+        {
+                console.error(err.message);
+                response.status(500).send("Error connecting to DB");
+                return;
+        }
+    connection.execute(
+         "DELETE FROM airportdb.ticket where ticket_id = :id",[id],{autoCommit: true},
+        (err, result) => {
+            if (!err) {
+                console.log("Ticket Deleted");
+            }
+            else if (err) {
+                res.send("Error!");
+                console.log(err);
+                
+            }
+        }
+    );
+    });
+
+});
 
 
 

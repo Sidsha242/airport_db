@@ -8,6 +8,7 @@ import Axios from 'axios';
 const BookFlight = () => {
 
     const [username, setUsername] = useState('');
+    const [confirmmessage, setconfirmmessage] = useState('');
 
     useEffect(() => {
         const items = JSON.parse(localStorage.getItem('user'));
@@ -22,23 +23,30 @@ const BookFlight = () => {
 
 
     const Book = () => {
-        Axios.post('http://localhost:3001/api/bookflight', {
+        Axios.post('http://localhost:3001/api/bookticket', {
               
-              flight_id:propsData.flight_id,
-              user_name: username,
-
+            flight_id:propsData.flight_id,
+            user_id: items.result.rows[0][0],
+            ticket_fare_amount : total,
 
          }).then((response) => {
-            setbusnmessage(response.data.message);
-            window.location.href = '/dashboard';
+            console.log("Booked");
+            console.log(response);
+            setconfirmmessage(response.data);
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 2000)
          })
 
     };
 
+    
+    const items = JSON.parse(localStorage.getItem('user'));
+    console.log(items.result.rows[0][0]);
     const location = useLocation();
     const propsData = location.state;
+    const total = propsData.base_price;
     console.log(propsData);
-    console.log(propsData.airlie)
     return (
         <>
         <div className='bg-[#97DEFF] h-screen pt-10'>
@@ -69,6 +77,19 @@ const BookFlight = () => {
                     <div>
                     Arrival: {propsData.arr_code}<br/>
                     </div>
+                </div>
+                <div>
+                    Available Seat Class:
+                </div>
+                <hr style={{marginTop: "8px",background: "#000000", height: "3px",border: "none",}}/>
+                <div className='mt-6'>
+                    User Info
+                </div>
+                <div>
+                        User Id : {items.result.rows[0][0]}
+                </div>
+                <div>
+                        User Name : {items.result.rows[0][1]}
                 </div>
             </div>
             <div className='container-book pb-20 rounded-md bg-white mt-6 ml-5 mr-5'>
@@ -105,9 +126,12 @@ const BookFlight = () => {
                     }}
                     />
                     <div className='text-2xl text-black-800 font-bold pt-5 pl-10 pr-10'>
-                          $230
+                    Total : ₹{total}
                     </div>
-            <button type="submit" className="text-center ml-48 h-12 px-6 mt-3 text-lg bg-green-400 text-white rounded-lg hover:bg-sky-700 font-bold" >Book Flight</button>
+            <button type="submit" className="text-center ml-48 h-12 px-6 mt-3 text-lg bg-green-400 text-white rounded-lg hover:bg-sky-700 font-bold" onClick={() =>Book()} >Book Flight</button>
+            <div className='font-bold text-2xl text-center mt-3'>
+                {confirmmessage}
+            </div>
             </div>
             </div>
         </div>

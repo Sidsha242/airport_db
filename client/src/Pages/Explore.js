@@ -15,11 +15,11 @@ const Explore = () => {
 
      useEffect(() => {
 
-         console.log("inside useffect");
+         //console.log("inside useffect");
 
          Axios.get(`http://localhost:3001/api/exploreinfo`, {
         }).then((response) => {
-            console.log(response.data.rows);
+             console.log(response.data);
              console.log("response received");
              set_exp_arr(response.data.rows);
         });
@@ -39,7 +39,7 @@ const Explore = () => {
             <div className='ml-20 pt-10 pb-20 flex flex-wrap' >
 
                 {displayedData.map((id) => (
-                    <FlightCard state={id} key={id[0]} arr_date={id[2]} dep_date={id[1]} flight_id={id[0]} airline={id[8]} dep_code={id[9]} dep_city={id[11]} dep_country={id[13]} dep_hour={id[3]} dep_min={id[4]} arr_code={id[10]} arr_city={id[12]} arr_country={id[14]} arr_hour={id[5]} arr_min={id[6]} seat_avail={id[7]} base_price={id[15]}/>
+                    <FlightCard state={id} key={id[0]} flight_id={id[0]} arr_date={id[1]} dep_date={id[2]}  dep_time={id[3]} arr_time={id[4]} seat_avail={id[5]} airline={id[6]} dep_code={id[7]} arr_code={id[8]} dep_city={id[9]} arr_city={id[10]} dep_country={id[11]} arr_country={id[12]} base_price={id[13]}/>
                 ))}
 
             </div>

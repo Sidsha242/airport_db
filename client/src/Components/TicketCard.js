@@ -1,57 +1,77 @@
 
-import React from 'react'
-import './TicketCard.scss'
-const TicketCard = () => {
-  return (
+    import React from 'react'
+    import './TicketCard.scss'
+    import Axios from 'axios';
+    import { useState } from 'react';
+
+    const TicketCard = (props) => {
+
+        const [ticketstatus, setTicketstatus] = useState('');
+
+    const CancelTicket = () => {
+        console.log("Canceling Ticket");
+        Axios.delete(`http://localhost:3001/api/cancelticket/${props.ticket_id}`, {
+
+        }).then((response) => {
+            console.log(response);
+                window.location.href = '/dashboard';
+        })
+
+    }
+
+    return (
+        
     <>
-	<div class="container">
+    <div class="container mt-10">
 
-<div class="ticket basic">
+    <div class="ticket basic">
     <p>Admit One</p>
-</div>
+    </div>
 
-<div className="ticket airline">
+    <div className="ticket airline">
     <div className="top font-bold">
-        <h1>Boarding Pass</h1>
-        <div className="big">
-            <p className="from">BWI</p>
-            <p className="to"><i class="fas fa-arrow-right"></i> SAN</p>
-        </div>
-        <div className="top--side">
-            <i className="fas fa-plane"></i>
-            <p>Baltimore</p>
-            <p>San Diego</p>
-        </div>
+    <h1>Boarding Pass</h1>
+
+    <div className="big">
+        <p className="from">{props.dep_cd}</p>
+        <p className="to"><i class="fas fa-arrow-right"></i> {props.arr_cd}</p>
+    </div>
+    <div className="top--side">
+        <p>{props.dep_city}</p>
+        <p>{props.arr_city}</p>
+    </div>
     </div>
     <div className="bottom">
-        <div className="column">
-            <div className="row row-1">
-                <p><span>Flight ID</span>AA2005</p>
-                <p className="row--center"><span>Departure Date</span>23-04-2023</p>
-                <p className="row--right"><span>Arrival Date</span>24-04-2023</p>
-            </div>
-            <div className="row row-2">
-                <p><span>Airlines</span>Emirates</p>
-                <p className="row--center"><span>Departs</span>11:00 AM</p>
-                <p className="row--right"><span>Arrives</span>1:05 PM</p>
-            </div>
-            <div className="row row-3">
-                <p><span>Passenger</span>Ram Anand</p>
-                <p><span>Age</span>25</p>
-            </div>
-            <div className="row row-4">
-                <p><span>Class</span>Economy</p>
-                <p><span>Category</span>General</p>
-            </div>
+    <div className="column ">
+        <div className='row row-1'>
+                <h2>Ticket Id: {props.ticket_id}</h2>
+        </div>
+        <div className="row row-1">
+            <p><span>Flight ID</span>{props.flight_id}</p>
+            <p className="row--center"><span>Departure Date</span>{props.dep_date}</p>
+            <p className="row--right"><span>Arrival Date</span>{props.arr_date}</p>
+        </div>
+        <div className="row row-2">
+            <p><span>Airlines</span>{props.airline}</p>
+            <p className="row--center"><span>Departs</span>{props.dep_time}</p>
+            <p className="row--right"><span>Arrives</span>{props.arr_time}</p>
+        </div>
+        <div className="row row-3">
+            <p><span>User Id</span>{props.user_id}</p>
+        </div>
+        <div className="row row-4">
+            <p><span>Class</span>Economy</p>
+            <p><span>Category</span>General</p>
         </div>
     </div>
-    <button type="submit" className="h-12 px-6 mt-3 text-lg bg-black text-white rounded-lg hover:bg-sky-700 font-bold">Cancel Ticket</button>
+    </div>
+    <button type="submit" className="h-12 px-6 mt-3 text-lg bg-black text-white rounded-lg hover:bg-sky-700 font-bold mb-4" onClick={() => CancelTicket()}>Cancel Ticket</button>
+    <div>{ticketstatus}</div>
+    </div>
 
-</div>
-
-</div>
+    </div>
     </>
-  )
-}
+    )
+    }
 
-export default TicketCard
+    export default TicketCard

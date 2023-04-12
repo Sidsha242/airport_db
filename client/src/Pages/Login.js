@@ -39,9 +39,9 @@ const Login = () => {
                     },
                 }).then((response) => {
                     console.log("Auth suc");
-                    setTimeout(() => {
-                        window.location.href = '/dashboard';
-                    }, 1000)
+                   setTimeout(() => {
+                       window.location.href = '/dashboard';
+                   }, 1000)
                 });
 
 

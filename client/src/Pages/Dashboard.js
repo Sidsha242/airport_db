@@ -3,12 +3,13 @@ import React from 'react'
 import Axios from 'axios';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import img3 from "../Images/avatar-icon1.png";
-import BusinessCard from '../Components/BusinessCard';
 import TicketCard from '../Components/TicketCard';
 
 const DashBoard = () => {
 
     const [username, setUsername] = useState('');
+
+    const [userid,setuserId] = useState('');  //needed to display tickets
 
     const disp = false;
 
@@ -22,12 +23,13 @@ const DashBoard = () => {
 
     useEffect(() => {
         const items = JSON.parse(localStorage.getItem('user'));
-        console.log(items.result.rows[0][1]);
+        //console.log(items.result.rows[0][1]);  ..will show error if uncomment
         if (items === null) {
           setUsername(null);
          }
          else {
            setUsername(items.result.rows[0][1]);
+           setuserId(items.result.rows[0][0]);
           }
     }, []);
 
@@ -38,6 +40,8 @@ const DashBoard = () => {
     else {
         return <Dash />;
     }
+
+    
 
     function UserLog() {
         return (
@@ -57,20 +61,21 @@ const DashBoard = () => {
     function Dash() {
 
         const [ticket_arr, set_ticket_arr] = useState([]);
+       
 
-        // useEffect(() => {
+        useEffect(() => {
 
-        //     console.log("inside useffect");
+             console.log("inside useffect");
 
-        //     Axios.get(`http://localhost:3001/api/dashinfo/${username}`, {
-        //     }).then((response) => {
-        //         console.log("response received");
-        //         set_bus_arr(response.data);
-        //         console.log(response.data);
+            Axios.get(`http://localhost:3001/api/dashinfo/${userid}`, {
+             }).then((response) => {
+               console.log("response received");
+               console.log(response);
+               set_ticket_arr(response.data.rows);
+                
+            });
 
-        //     });
-
-        // }, []);
+         }, []);
 
         return (<>
             <div className='bg-[#97DEFF] h-full  pt-10 pb-20 pr-20'>
@@ -97,14 +102,12 @@ const DashBoard = () => {
                         </button>
                     </Link >
                 </div>
-                
-                <div className='mt-8'>
-                <TicketCard />
-                </div>
-                
+
+                <div className='mt-5 pb-5 flex'>
                 {ticket_arr.map((id) => (
-                    <BusinessCard key={id.id_business} bus_nam={id.bus_nam} desc={id.descrip} price={id.price} />
+                    <TicketCard ticket_id={id[0]} flight_id={id[1]} arr_date={id[2]} dep_date={id[3]} dep_time={id[4]} arr_time={id[5]} airline={id[6]} dep_cd={id[7]} arr_cd={id[8]} dep_city={id[9]} arr_city={id[10]} user_id={userid}/>
                 ))}
+                </div>
             </div>
         </>
         );
