@@ -42,8 +42,8 @@ app.use(session({
 );
 
 var connectionProperties = {
-    user: 'airportdb',
-    password: 'durga23' ,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD ,
     connectString: "localhost/xe"
  };
 
