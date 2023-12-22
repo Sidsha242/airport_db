@@ -7,6 +7,7 @@ import Navbar from './Components/Navbar';
 import Explore from './Pages/Explore';
 import BookFlight from './Pages/BookFlight';
 import NewPassenger from './Pages/NewPassenger';
+import Admin from './Pages/Admin';
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
         <Route exact path='/explore' element={< Explore />}></Route>
         <Route exact path='/newpas' element={< NewPassenger />}></Route>
         <Route exact path='/bookflight' element={< BookFlight />}></Route>
+        <Route exact path='/admin' element={<Admin />}></Route>
       </Routes>
     </div >
   </Router >

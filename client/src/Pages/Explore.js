@@ -29,11 +29,11 @@ const Explore = () => {
 
     let [Filter, setFilter] = useState('');
 
-    const displayedData = Filter ? exp_arr.filter(element => element[11].toLowerCase().includes(Filter.toLowerCase())) : exp_arr
+    const displayedData = Filter ? exp_arr.filter(element => element[9].toLowerCase().includes(Filter.toLowerCase())) : exp_arr
 
     return (
         <div className='bg-[#97DEFF] h-full'>
-            <div className='pt-12 pl-20 pr-20 ml-10'>
+            <div className='pt-12 pl-20 pr-20 ml-10 mb-20'>
                 <SearchBar setFilter={setFilter} />
             </div>
             <div className='ml-20 pt-10 pb-20 flex flex-wrap' >

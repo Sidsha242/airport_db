@@ -65,17 +65,18 @@ const DashBoard = () => {
 
         useEffect(() => {
 
-             console.log("inside useffect");
+            // console.log("inside useffect");
 
             Axios.get(`http://localhost:3001/api/dashinfo/${userid}`, {
              }).then((response) => {
                console.log("response received");
-               console.log(response);
+               console.log(response.data);
                set_ticket_arr(response.data.rows);
                 
             });
 
          }, []);
+        
 
         return (<>
             <div className='bg-[#97DEFF] h-full  pt-10 pb-20 pr-20'>
@@ -104,14 +105,28 @@ const DashBoard = () => {
                 </div>
 
                 <div className='mt-5 pb-5 flex'>
-                {ticket_arr.map((id) => (
-                    <TicketCard ticket_id={id[0]} flight_id={id[1]} arr_date={id[2]} dep_date={id[3]} dep_time={id[4]} arr_time={id[5]} airline={id[6]} dep_cd={id[7]} arr_cd={id[8]} dep_city={id[9]} arr_city={id[10]} user_id={userid}/>
-                ))}
+
+                {(() => {
+                  if(ticket_arr.length == 0) {
+                    return <NoTicket/>
+                     }
+                 })()}
+
+                  {ticket_arr.map((id) => (
+                            <TicketCard ticket_id={id[0]} seat_class={id[1]} flight_id={id[2]} arr_date={id[3]} dep_date={id[4]} dep_time={id[5]} arr_time={id[6]} airline={id[7]} dep_cd={id[8]} arr_cd={id[9]} dep_city={id[10]} arr_city={id[11]} passenger_id={id[14]} passenger_firstname={id[15]} passenger_lastname={id[16]}/>
+                        ))}
+               
                 </div>
             </div>
         </>
-        );
+        );}
     }
+function NoTicket() {
+return(
+    <div className='font-bold mx-auto text-2xl text-center  bg-[#97DEFF]'>
+            No Tickets booked
+    </div>
+)
 
 }
 

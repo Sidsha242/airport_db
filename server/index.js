@@ -85,7 +85,7 @@ app.get('/test',(req,res)=>{
 app.post("/api/register", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;   //receiving value from back
-	console.log("POST USER:");
+	//console.log("POST USER:");
 
     bcrypt.hash(password, saltRounds, (err, hash) => {
 
@@ -238,12 +238,45 @@ app.get('/api/exploreinfo',(req,res)=>{
 }
 )
 
+app.get('/api/bookticket/:id', async (req, res) => {
+
+    const id = req.params.id;
+
+    //console.log("Getting passenger info");
+
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) 
+        {
+                console.error(err.message);
+                response.status(500).send("Error connecting to DB");
+                return;
+        }
+    connection.execute(
+         "select passenger.passenger_first_name,passenger.passenger_last_name,passenger_category.DISCOUNT_PERENTAGE,passenger.passenger_id from passenger,passenger_category where passenger.user_id = :id and passenger.pas_category=passenger_category.passenger_category_cd",[id], 
+        (err, result) => {
+            if (!err) {
+                res.send(result);
+                console.log(result);
+            }
+            else if (err) {
+                
+                res.send("Error!");
+                console.log(err);
+                
+            }
+        }
+    );
+    });
+    
+});
+
+
 app.post("/api/bookticket", (req,res) => {
 
-   const user_id = req.body.user_id;
+   const passenger_id = req.body.passenger_id;
    const flight_id = req.body.flight_id;
    const ticket_fare_amount = req.body.ticket_fare_amount;
-   const iscancel= "N";
+   const seat_class =  req.body.seat_class;
 
    oracledb.getConnection(connectionProperties, function (err, connection) {
     if (err) 
@@ -253,8 +286,8 @@ app.post("/api/bookticket", (req,res) => {
             return;
     }
 connection.execute(
-    "INSERT INTO airportdb.ticket (flight_id,user_id,ticket_fare_amount,iscancel) VALUES (:flight_id,:user_id,:ticket_fare_amount,:iscancel)",
-    [flight_id,user_id,ticket_fare_amount,iscancel],{autoCommit: true},
+    "INSERT INTO airportdb.ticket (flight_id,passenger_id,seat_class_cd,ticket_fare_amount) VALUES (:flight_id,:passenger_id,:seat_class,:ticket_fare_amount)",
+    [flight_id,passenger_id,seat_class,ticket_fare_amount],{autoCommit: true},
     (err, result) => {
         if (!err) {
             res.send("Booking successful!");
@@ -285,7 +318,7 @@ app.get("/api/dashinfo/:id", async (req, res) => {
                 return;
         }
     connection.execute(
-         "select ticket.ticket_id,flight.flight_id,to_char(cast(flight.arrival_datetime as date),'DD-MM-YYYY') as arrival_date,to_char(cast(flight.departure_datetime as date),'DD-MM-YYYY') as departure_date,to_char(departure_datetime, 'hh24:mi') as dep_time,to_char(arrival_datetime, 'hh24:mi') as arr_time,airlines.airlines_name,route.departure_airport_cd,route.destination_airport_cd,a.airport_city departure_city,b.airport_city destination_city,a.airport_country_cd departure_airport_country,b.airport_country_cd destination_airport_country from ticket,flight,route,airlines,airport a,airport b where user_id= :id and ticket.flight_id=flight.flight_id and flight.route_id=route.route_id and flight.airlines_cd=airlines.airlines_cd and route.departure_airport_cd = a.airport_cd and route.destination_airport_cd = b.airport_cd",[id], 
+         "select ticket.ticket_id,ticket.seat_class_cd,flight.flight_id,to_char(cast(flight.arrival_datetime as date),'DD-MM-YYYY') as arrival_date,to_char(cast(flight.departure_datetime as date),'DD-MM-YYYY') as departure_date,to_char(departure_datetime, 'hh24:mi') as dep_time,to_char(arrival_datetime, 'hh24:mi') as arr_time,airlines.airlines_name,route.departure_airport_cd,route.destination_airport_cd,a.airport_city departure_city,b.airport_city destination_city,a.airport_country_cd departure_airport_country,b.airport_country_cd destination_airport_country,passenger.passenger_id,passenger.passenger_first_name,passenger.passenger_last_name from ticket,passenger,flight,route,airlines,airport a,airport b where user_id= :id and user_id = passenger.user_id and passenger.passenger_id=ticket.passenger_id and ticket.flight_id = flight.flight_id and flight.route_id=route.route_id and flight.airlines_cd=airlines.airlines_cd and route.departure_airport_cd = a.airport_cd and route.destination_airport_cd = b.airport_cd",[id], 
         (err, result) => {
             if (!err) {
                 res.send(result);
@@ -331,7 +364,68 @@ app.delete("/api/cancelticket/:id", async (req, res) => {
 
 });
 
+app.post("/api/newpas", (req, res) => {
+    const user_id = req.body.userid;
+    const firstname= req.body.pasfirstname;
+    const lastname = req.body.paslastname;
+    const dob = req.body.dob;
+    const gender = req.body.gender;
+    const pas_category = req.body.pas_category;
 
+    //console.log(user_id);
+    //console.log(pas_category);
+
+
+			oracledb.getConnection(connectionProperties, function (err, connection) {
+			if (err) 
+            {
+					console.error(err.message);
+					response.status(500).send("Error connecting to DB");
+					return;
+            }
+        connection.execute(
+            "INSERT INTO airportdb.passenger (user_id,passenger_first_name,passenger_last_name,passenger_gender,pas_category,passenger_dob) VALUES (:user_id,:firstname,:lastname,:gender,:pas_category,:dob)",
+            [user_id,firstname,lastname,gender,pas_category,dob],{autoCommit: true},
+            (err, result) => {
+                if (!err) {
+                    res.send("New Passenger Added!");
+                }
+                else if (err) {
+                    res.send("Error in adding passenger");
+                    console.log(err)
+                    
+                }
+            }
+        );
+    });
+});
+
+app.get("/api/admin/getcancel", async (req, res) => {
+
+
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) 
+        {
+                console.error(err.message);
+                response.status(500).send("Error connecting to DB");
+                return;
+        }
+    connection.execute(
+         "select * from airportdb.log_cancel_ticket ", 
+        (err, result) => {
+            if (!err) {
+                res.send(result);
+            }
+            else if (err) {
+                res.send("Error!");
+                console.log(err);
+                
+            }
+        }
+    );
+    });
+    
+});
 
 PORT = process.env.PORT || 3001
 

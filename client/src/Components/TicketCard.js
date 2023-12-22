@@ -11,11 +11,12 @@
     const CancelTicket = () => {
         console.log("Canceling Ticket");
         Axios.delete(`http://localhost:3001/api/cancelticket/${props.ticket_id}`, {
-
         }).then((response) => {
+           
             console.log(response);
-                window.location.href = '/dashboard';
         })
+
+        window.location.reload(true);
 
     }
 
@@ -57,11 +58,14 @@
             <p className="row--right"><span>Arrives</span>{props.arr_time}</p>
         </div>
         <div className="row row-3">
-            <p><span>User Id</span>{props.user_id}</p>
+            <p><span>Passenger Id</span>{props.passenger_id}</p>
+            <p><span>Class</span>{props.seat_class}</p>
         </div>
-        <div className="row row-4">
-            <p><span>Class</span>Economy</p>
-            <p><span>Category</span>General</p>
+        <div className="row row-3">
+            <p><span>Name</span>{props.passenger_firstname} {props.passenger_lastname}</p>
+        </div>
+        <div className='text-1xl font-bold mt-2 text-center'>
+           Have a Great Flight !
         </div>
     </div>
     </div>

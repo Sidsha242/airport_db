@@ -12,8 +12,8 @@ module.exports = {
     "./src/Pages/NewTicket.js",
     "./src/Components/TicketCard.js",
     "./src/Pages/BookFlight.js",
-    "./src/Pages/NewPassenger.js"
-
+    "./src/Pages/NewPassenger.js",
+    "./src/Pages/Admin.js"
   ],
   theme: {
     extend: {
